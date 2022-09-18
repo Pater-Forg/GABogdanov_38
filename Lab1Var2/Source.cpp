@@ -3,54 +3,55 @@
 #include <ctime>     // time
 #include <map>       // map
 
-// ASCII код для буквы "a" английского алфавита
+// ASCII code for english letter 'a'
 const int ASCII_FIRST_LETTER_CODE_LC = 97;
-// ASCII код для буквы "z" английского алфавита
+// ASCII code for english letter 'z'
 const int ASCII_LAST_LETTER_CODE_LC = 122;
 
 /*
- * Генерирует строку из случайных символов английского алфавита (в нижнем регистре)
+ * Generates random string from english letters (lower case)
  * 
- * @param str ссылка на строку для заполнения
- * @param size желаемая длина строки
+ * @param str Reference for string to fill
+ * @param size Length of the generated string
  */
 void generateRandomString(std::string& str, int size);
 
 int main() {
-	// задаем семя для ГПСЧ
+	// initialize random seed
 	std::srand(std::time(nullptr));
-	// длина генерируемой строки
+	// length of the generated string
 	const int N = 10000;
-	// строка для заполнения
+	// the string to fill
 	std::string str = "";
-	// генерируем строку из случайных символов английского алфавита
+	// generate random string from english letters
+	std::cout << "Generating string..." << std::endl;
 	generateRandomString(str, N);
 
-	// ассоциативный контейнер для хранения пар <буква, количество>
+	// associative container to store pair of <letter, number>
 	std::map<char, int> letter_dict;
-	// заполняем словарь, устанавливая количество букв в 0
+	// fill the map
 	for (int code = ASCII_FIRST_LETTER_CODE_LC; code <= ASCII_LAST_LETTER_CODE_LC; code++) {
 		letter_dict.insert(std::pair<char, int>((char)code, 0));
 	}
-
-	// считаем буковы
+	// counting letters
+	std::cout << "Calculating..." << std::endl;
 	for (auto& letter : str) {
 		letter_dict[letter] += 1;
 	}
-
-	// выводим результат
+	// print the result
 	for (auto& pair : letter_dict) {
 		std::cout << pair.first << ": " << pair.second << std::endl;
 	}
-
+	std::cout << "Press <Enter> to quit" << std::endl;
+	std::getchar();
 	return 0;
 }
 
 void generateRandomString(std::string& str, int size) {
-	// очищаем строку
+	// clear string
 	str.clear();
 
-	// заполняем строку случайными символами английского алфавита
+	// fill the string with english letters
 	for (int i = 0; i < size; i++) {
 		int ascii_code = ASCII_FIRST_LETTER_CODE_LC +
 			(std::rand() % (ASCII_LAST_LETTER_CODE_LC - ASCII_FIRST_LETTER_CODE_LC + 1));
