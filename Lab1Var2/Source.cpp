@@ -23,7 +23,7 @@ int main() {
 	const int N = 10000;
 	// the string to fill
 	std::string str = "";
-	// генерируем строку из случайных символов английского алфавита
+	// generate random string from english letters
 	std::cout << "Generating string..." << std::endl;
 	generateRandomString(str, N);
 
