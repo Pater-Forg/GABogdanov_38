@@ -30,6 +30,13 @@ void printMatrix(int** mat, int n);
  * @param msg message to print
  */
 void fixInputError(const char* msg);
+/*
+ * Free memory allocated for matrix
+ * 
+ * @param mat pointer to pointer to delete
+ * @param n size of matrix
+ */
+void freeMem(int** mat, int n);
 
 int main() {
 	std::srand(std::time(nullptr));
@@ -66,7 +73,8 @@ int main() {
 	int command = 0;
 	char mat = '*';
 	int res = 0;
-	do
+	bool condition = true;
+	while (condition)
 	{
 		std::cout << "> ";
 		std::cin >> command;
@@ -111,13 +119,17 @@ int main() {
 			std::cout << "Determinant of " << mat << " = " << res << std::endl;
 			break;
 		case 0:
-			return 0;
+			condition = false;
 		default:
 			fixInputError("unknown command");
 			break;
 		}
-	} while (true);
+	}
 
+	std::cout << "Deallocating memory..." << std::endl;
+	freeMem(c, n);
+	freeMem(b, n);
+	freeMem(a, n);
 	return 0;
 }
 
@@ -155,4 +167,11 @@ void fixInputError(const char* msg) {
 	std::cout << "[Error] " << msg << std::endl;
 	std::cin.clear();
 	std::cin.ignore(INT_MAX, '\n');
+}
+
+void freeMem(int** mat, int n) {
+	for (int i = 0; i < n; i++) {
+		delete[] mat[i];
+	}
+	delete[] mat;
 }
