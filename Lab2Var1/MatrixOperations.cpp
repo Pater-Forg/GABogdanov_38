@@ -32,7 +32,17 @@ void matOp::transpose(int** a, int** res, int n)
     }
 }
 
-int** trim_line_and_column(int** m, int n, int line, int col)
+/*
+ * Cross out given line and column, forming minor of matrix
+ * 
+ * @param m given matrix
+ * @param n size of matrix
+ * @param line number of line to cross out
+ * @param col number of colubn to cross out
+ * 
+ * @return pointer to new matrix
+ */
+int** trimLineAndColumn(int** m, int n, int line, int col)
 {
     int k = n - 1;  // size of trimmed matrix
     int** newMat = new int* [k];
@@ -63,7 +73,7 @@ int matOp::det(int** a, int n)
     double res = 0;
     int k = 1;
     for (int i = 0; i < n; i++) {
-        int** t = trim_line_and_column(a, n, 0, i);
+        int** t = trimLineAndColumn(a, n, 0, i);
         res += k * a[0][i] * det(t, n-1);
         k = -k;
     }

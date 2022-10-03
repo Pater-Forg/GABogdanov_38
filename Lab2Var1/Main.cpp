@@ -120,6 +120,7 @@ int main() {
 			break;
 		case 0:
 			condition = false;
+			break;
 		default:
 			fixInputError("unknown command");
 			break;
