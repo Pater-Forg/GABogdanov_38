@@ -7,15 +7,76 @@
 #include <vector>
 #include "Employee.h"
 
+/*
+ * Generate full name from random parts
+ * 
+ * @param fn_file name of file with first names
+ * @param mn_file name of file with middle names
+ * @param ln_file name of file with last names
+ * @return string with full name
+ */
 std::string genFullName(std::string fn_file, std::string mn_file, std::string ln_file);
+/*
+ * Generate gender (male/female)
+ * 
+ * @return string with gender
+ */
 std::string genGender();
+/*
+ * Generate random date from given range of age
+ * 
+ * @param min_age minimal age of employee
+ * @param max_age maximal age of employee
+ * @return date of birth struct
+ */
 Date genDateOfBirth(int min_age, int max_age);
+/*
+ * Count number of lines in file
+ * 
+ * @param fin file stream
+ * @return number of lines
+ */
 int countNumberOfLines(std::ifstream& fin);
+/*
+ * Randomly fill vector of employees
+ * 
+ * @emps array to fill
+ */
 void randFillArrayOfEmployees(std::vector<Employee>& emps);
+/*
+ * Find all employees with given full name
+ * 
+ * @param emps array with employees
+ * @param fn full name
+ * @return array with found employees
+ */
 std::vector<Employee> selectByFullName(const std::vector<Employee>& emps, const std::string fn);
+/*
+ * Generates a slice of employees from an array by year of birth (more or less)
+ * 
+ * @param emps array with employees
+ * @param year year to form slice
+ * @param op more or less
+ */
 std::vector<Employee> selectByYearOfBirth(const std::vector<Employee>& emps, int year, char op);
+/*
+ * Print statistics by gender
+ * 
+ * @param emps array with employees
+ */
 void printStatisticsByGender(const std::vector<Employee>& emps);
-void sortByAge(std::vector<Employee>& emps, bool isDesc);
+/*
+ * Sort array of employees by age
+ * 
+ * @param emps array with employees
+ * @param is_desc is sort descending
+ */
+void sortByAge(std::vector<Employee>& emps, bool is_desc);
+/*
+ * Print info about employees
+ * 
+ * @param emps array with employees
+ */
 void printEmployees(std::vector<Employee>& emps);
 
 /*
@@ -25,6 +86,20 @@ void printEmployees(std::vector<Employee>& emps);
  */
 void fixInputError(const char* msg);
 
+/*
+ You need to write a program that:
+ The "Employee" structure will be implemented with the following fields:
+  * Full name
+  * Floor
+  * Year of Birth (Date Structure)
+ An array has been created that stores N workers, the number is read from the keyboard.
+ N workers filled or generated.
+ Functions are written that:
+  * Conducts a search in the array of employees and finds an employee by full name.
+  * Generates a slice of employees from an array by year of birth (more or less).
+  * Displays employee statistics by gender.
+  * Sorts an array of employees by age (all date components are taken into account).
+ */
 int main() {
 	std::srand(std::time(nullptr));
 	int n = 0;
@@ -85,7 +160,7 @@ int main() {
 				continue;
 			}
 			selection = selectByYearOfBirth(emps, year, oper);
-			std::cout << "Selection:\n- - -" << std::endl;
+			std::cout << "Selection:" << std::endl;
 			printEmployees(selection);
 			break;
 		case 3:
@@ -175,12 +250,7 @@ Date genDateOfBirth(int min_age, int max_age) {
 	}
 
 	if (r_month == 2) {
-		// checking for leap year
-		if (r_year % 400 == 0 || (r_year % 4 == 0 && r_year % 100 != 0)) {
-			max_day = 29;
-		} else {
-			max_day = 28;
-		}
+		max_day = 28;
 	}
 
 	int r_day = min_day + std::rand() % (max_day - min_day + 1);
@@ -261,9 +331,9 @@ void printStatisticsByGender(const std::vector<Employee>& emps) {
 	std::cout << "{\n  Males: " << males << ";\n  Females: " << females << ";\n}" << std::endl;
 }
 
-void sortByAge(std::vector<Employee>& emps, bool isDesc) {
-	std::sort(emps.begin(), emps.end(), [isDesc](const Employee& left, const Employee& right) {
-		return (isDesc) ? left.date_of_birth < right.date_of_birth : 
+void sortByAge(std::vector<Employee>& emps, bool is_desc) {
+	std::sort(emps.begin(), emps.end(), [is_desc](const Employee& left, const Employee& right) {
+		return (is_desc) ? left.date_of_birth < right.date_of_birth : 
 			left.date_of_birth > right.date_of_birth;
 	});
 }

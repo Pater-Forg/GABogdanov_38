@@ -2,6 +2,9 @@
 #include <string>
 #include "Date.h"
 
+/*
+ * Struct to contain info about employee
+ */
 struct Employee {
 	std::string full_name;
 	std::string gender;

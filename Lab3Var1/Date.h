@@ -1,6 +1,9 @@
 #pragma once
 #include <ctime>
 
+/*
+* Struct to contain year, month and day
+*/
 struct Date {
 	int year;
 	int month;
@@ -9,6 +12,11 @@ struct Date {
 	Date() : year(1), month(1), day(1) {}
 	Date(int y, int m, int d) : year(y), month(m), day(d) {}
 	
+	/*
+	 * Generate string in format 'dd/mm/yyyy'
+	 * 
+	 * @return date string
+	 */
 	std::string toString() {
 		std::string year_s = std::to_string(year);
 		std::string month_s = std::to_string(month);
