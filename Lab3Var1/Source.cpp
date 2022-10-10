@@ -33,10 +33,10 @@ Date genDateOfBirth(int min_age, int max_age);
 /*
  * Count number of lines in file
  * 
- * @param fin file stream
- * @return number of lines
+ * @param filename name of file
+ * @return number of lines or -1 if file doesn't exist
  */
-int countNumberOfLines(std::ifstream& fin);
+int countNumberOfLines(std::string filename);
 /*
  * Randomly fill vector of employees
  * 
@@ -87,10 +87,31 @@ void printEmployees(std::vector<Employee>& emps);
 void fixInputError(const char* msg);
 
 /*
+ * Reads operation from user and calls the corresponding function
+ * 
+ * @param emps array with employees
+ */
+void controller(std::vector<Employee>& emps);
+
+/*
+ * Print full names of employees to stdout
+ */
+void printNames(const std::vector<Employee>& emps);
+
+/*
+ * Reads line from file of given number
+ * 
+ * @param filename name of file
+ * @param n number of line
+ * @return line
+ */
+std::string readLine(std::string filename, int n);
+
+/*
  You need to write a program that:
  The "Employee" structure will be implemented with the following fields:
   * Full name
-  * Floor
+  * Gender
   * Year of Birth (Date Structure)
  An array has been created that stores N workers, the number is read from the keyboard.
  N workers filled or generated.
@@ -111,120 +132,27 @@ int main() {
 	}
 	std::vector<Employee> emps(n);
 	randFillArrayOfEmployees(emps);
-	for (int i = 0; i < n; i++) {
-		std::cout << i + 1 << ". " << emps[i].full_name << std::endl;
-	}
-
-	std::vector<Employee> selection;
-	std::string fname;
-	int year = 0;
-	char oper = '\0';
-	int option = 0;
-	bool cond = true;
-	const char* msg = "\nSelect option:\n"
-		"[1] Find employee by full name\n"
-		"[2] Print selection by year of birth\n"
-		"[3] Print statistics by gender\n"
-		"[4] Sort by age and print\n"
-		"[5] Print this message\n"
-		"[0] Exit";
-	std::cout << msg << std::endl;
-	while (cond) {
-		std::cout << "> ";
-		std::cin >> option;
-		if (std::cin.fail()) {
-			fixInputError("Number expected");
-			continue;
-		}
-		switch (option)
-		{
-		case 1:
-			std::cout << "Enter full name" << std::endl;
-			std::cin.ignore();
-			std::getline(std::cin, fname);
-			selection = selectByFullName(emps, fname);
-			std::cout << "Selection:\n- - -" << std::endl;
-			printEmployees(selection);
-			break;
-		case 2:
-			std::cout << "Enter year" << std::endl;
-			std::cin >> year;
-			if (std::cin.fail()) {
-				fixInputError("Number expected");
-				continue;
-			}
-			std::cout << "Choose comparation [>/<]" << std::endl;
-			std::cin >> oper;
-			if (std::cin.fail()) {
-				fixInputError("Char expected");
-				continue;
-			}
-			selection = selectByYearOfBirth(emps, year, oper);
-			std::cout << "Selection:" << std::endl;
-			printEmployees(selection);
-			break;
-		case 3:
-			printStatisticsByGender(emps);
-			break;
-		case 4:
-			std::cout << "[A]scending or [D]escending?" << std::endl;
-			std::cin >> oper;
-			if (std::cin.fail()) {
-				fixInputError("Char expected");
-				continue;
-			}
-			if (toupper(oper) == 'A')
-				sortByAge(emps, false);
-			else if (toupper(oper) == 'D')
-				sortByAge(emps, true);
-			else {
-				fixInputError("Wrong option");
-				continue;
-			}
-			printEmployees(emps);
-			break;
-		case 5:
-			std::cout << msg << std::endl;
-			break;
-		case 0:
-			cond = false;
-			break;
-		default:
-			fixInputError("Wrong option");
-			break;
-		}
-	}
+	printNames(emps);
+	controller(emps);
+	
 	return 0;
 }
 
 std::string genFullName(std::string fn_file, std::string mn_file, std::string ln_file) {
-	std::ifstream fn_stream(fn_file);
-	std::ifstream mn_stream(mn_file);
-	std::ifstream ln_stream(ln_file);
-
-	if (!fn_stream || !mn_stream || !ln_stream) return "";
-
-	static int fn_count = countNumberOfLines(fn_stream);
-	static int mn_count = countNumberOfLines(mn_stream);
-	static int ln_count = countNumberOfLines(ln_stream);
+	static int fn_count = countNumberOfLines(fn_file);
+	static int mn_count = countNumberOfLines(mn_file);
+	static int ln_count = countNumberOfLines(ln_file);
 
 	int fn_line = std::rand() % (fn_count + 1);
 	int mn_line = std::rand() % (mn_count + 1);
 	int ln_line = std::rand() % (ln_count + 1);
 
-	std::string first_name;
-	std::string middle_name;
-	std::string last_name;
+	if (fn_line == -1 || mn_line == -1 || ln_line == -1)
+		return "";
 
-	for (int i = 0; i < fn_line; i++) {
-		fn_stream >> first_name;
-	}
-	for (int i = 0; i < mn_line; i++) {
-		mn_stream >> middle_name;
-	}
-	for (int i = 0; i < ln_line; i++) {
-		ln_stream >> last_name;
-	}
+	std::string first_name = readLine(fn_file, fn_line);
+	std::string middle_name = readLine(mn_file, mn_line);
+	std::string last_name = readLine(ln_file, ln_line);
 
 	return first_name + " " + middle_name + " " + last_name;
 }
@@ -257,14 +185,15 @@ Date genDateOfBirth(int min_age, int max_age) {
 	return Date(r_year, r_month, r_day);
 }
 
-int countNumberOfLines(std::ifstream& fin) {
+int countNumberOfLines(std::string filename) {
+	std::ifstream fin(filename);
+	if (!fin) return -1;
 	int count = 0;
 	std::string s;
 	while (!fin.eof()) {
 		fin >> s;
 		count++;
 	}
-	fin.seekg(0);
 	return count;
 }
 
@@ -352,4 +281,103 @@ void fixInputError(const char* msg) {
 	std::cout << "[Error] " << msg << std::endl;
 	std::cin.clear();
 	std::cin.ignore(INT_MAX, '\n');
+}
+
+void controller(std::vector<Employee>& emps) {
+	std::vector<Employee> selection;
+	std::string fname;
+	int year = 0;
+	char oper = '\0';
+	int option = 0;
+	bool cond = true;
+	const char* msg = "\nSelect option:\n"
+		"[1] Find employee by full name\n"
+		"[2] Print selection by year of birth\n"
+		"[3] Print statistics by gender\n"
+		"[4] Sort by age and print\n"
+		"[5] Print this message\n"
+		"[0] Exit";
+	std::cout << msg << std::endl;
+	while (cond) {
+		std::cout << "> ";
+		std::cin >> option;
+		if (std::cin.fail()) {
+			fixInputError("Number expected");
+			continue;
+		}
+		switch (option)
+		{
+		case 1:
+			std::cout << "Enter full name" << std::endl;
+			std::cin.ignore();
+			std::getline(std::cin, fname);
+			selection = selectByFullName(emps, fname);
+			std::cout << "Selection:\n" << std::endl;
+			printEmployees(selection);
+			break;
+		case 2:
+			std::cout << "Enter year" << std::endl;
+			std::cin >> year;
+			if (std::cin.fail()) {
+				fixInputError("Number expected");
+				continue;
+			}
+			std::cout << "Choose comparation [>/<]" << std::endl;
+			std::cin >> oper;
+			if (std::cin.fail()) {
+				fixInputError("Char expected");
+				continue;
+			}
+			selection = selectByYearOfBirth(emps, year, oper);
+			std::cout << "Selection:" << std::endl;
+			printEmployees(selection);
+			break;
+		case 3:
+			printStatisticsByGender(emps);
+			break;
+		case 4:
+			std::cout << "[A]scending or [D]escending?" << std::endl;
+			std::cin >> oper;
+			if (std::cin.fail()) {
+				fixInputError("Char expected");
+				continue;
+			}
+			if (toupper(oper) == 'A')
+				sortByAge(emps, false);
+			else if (toupper(oper) == 'D')
+				sortByAge(emps, true);
+			else {
+				fixInputError("Wrong option");
+				continue;
+			}
+			printEmployees(emps);
+			break;
+		case 5:
+			std::cout << msg << std::endl;
+			break;
+		case 0:
+			cond = false;
+			break;
+		default:
+			fixInputError("Wrong option");
+			break;
+		}
+	}
+}
+
+void printNames(const std::vector<Employee>& emps) {
+	for (int i = 0; i < emps.size(); i++) {
+		std::cout << i + 1 << ". " << emps[i].full_name << std::endl;
+	}
+}
+
+std::string readLine(std::string filename, int n) {
+	std::ifstream fin(filename);
+	if (!fin || fin.peek() == EOF) return "";
+	std::string res;
+	for (int i = 0; i < n && !fin.eof(); i++) {
+		fin >> res;
+	}
+	if (fin.eof()) res = "";
+	return res;
 }
